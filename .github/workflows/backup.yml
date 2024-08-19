@@ -1,0 +1,27 @@
+name: Daily Database Backup
+
+on:
+  schedule:
+    - cron: '0 13 * * *' 
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      - name: Set up Docker Compose
+        uses: docker/compose-action@v2
+        with:
+          docker-compose-file: 'docker-compose.yml'
+
+      - name: Run database backup
+        run: |
+          docker-compose up -d # Levanta os contêineres
+          ./backup.sh # Executa o script de backup
+        env:
+          DOCKER_BUILDKIT: 1
